@@ -1,7 +1,7 @@
 {
   "name": "@sunknudsen/logger",
-  "version": "0.0.1",
-  "description": "Logging utility used by a few of my projects",
+  "version": "0.0.2",
+  "description": "Logging utility used by a few of my projects.",
   "engines": {
     "node": ">=10.15.0"
   },

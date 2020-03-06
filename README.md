@@ -1,16 +1,16 @@
 # logger
 
-## Logging utility used by a few of my projects
+## Logging utility used by a few of my projects.
 
-This package abstracts logging and error monitoring vendors so they can be replaced without having to refactor the codebase.
+This package abstracts `console.log` and [@sentry/node](https://www.npmjs.com/package/@sentry/node).
 
-`logger.log` is a beautified version `console.log`.
+`logger.log` is a more beautiful version of `console.log`.
 
 `logger.listSensitiveKeys` returns an array of comma-separated values found in `process.env.LOGGER_SENSITIVE_KEYS`.
 
-`logger.captureException` is a wrapper around [@sentry/node](https://www.npmjs.com/package/@sentry/node)’s `sentry.captureException`.
+`logger.captureException` is a wrapper around @sentry/node’s `sentry.captureException`.
 
-`logger.captureMessage` is a wrapper around [@sentry/node](https://www.npmjs.com/package/@sentry/node)’s `sentry.captureMessage`.
+`logger.captureMessage` is a wrapper around @sentry/node’s `sentry.captureMessage`.
 
 ## Installation
 
