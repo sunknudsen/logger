@@ -35,7 +35,8 @@ Optionally use `LOGGER_SENSITIVE_KEYS` to filter sensitive keys (matching keys a
 ### Log to `stdout`
 
 ```typescript
-const logger = require("@sunknudsen/logger")
+import logger from "@sunknudsen/logger"
+// or `const logger = require("@sunknudsen/logger").default` for CommonJS
 
 logger.log(new Error("BOOM"))
 ```
@@ -43,7 +44,7 @@ logger.log(new Error("BOOM"))
 ### List sensitive keys
 
 ```typescript
-const logger = require("@sunknudsen/logger")
+import logger from "@sunknudsen/logger"
 
 logger.listSensitiveKeys()
 ```
@@ -51,7 +52,7 @@ logger.listSensitiveKeys()
 ### Capture exception
 
 ```typescript
-const logger = require("@sunknudsen/logger")
+import logger from "@sunknudsen/logger"
 
 logger.captureException(
   new Error("BOOM"),
@@ -71,7 +72,7 @@ logger.captureException(
 ### Capture message
 
 ```typescript
-const logger = require("@sunknudsen/logger")
+import logger from "@sunknudsen/logger"
 
 logger.captureMessage(
   "User signup",
