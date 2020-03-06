@@ -1,0 +1,54 @@
+{
+  "name": "@sunknudsen/logger",
+  "version": "0.0.1",
+  "description": "Logging utility used by a few of my projects",
+  "engines": {
+    "node": ">=10.15.0"
+  },
+  "main": "build/index.js",
+  "dependencies": {
+    "@sentry/node": "^5.13.2",
+    "dotenv": "^8.2.0",
+    "git-rev-sync": "^2.0.0"
+  },
+  "scripts": {
+    "start": "node build/index.js",
+    "ts": "tsc -w",
+    "code": "npm run ts",
+    "test": "lab -lS build/test.js --bail",
+    "build": "rm -fr build/*; tsc",
+    "ncu": "ncu -u"
+  },
+  "author": "Sun Knudsen <hello@sunknudsen.com>",
+  "license": "MIT",
+  "keywords": [
+    "logging"
+  ],
+  "devDependencies": {
+    "@hapi/code": "^8.0.1",
+    "@hapi/lab": "^22.0.3",
+    "@types/dotenv": "^8.2.0",
+    "@types/git-rev-sync": "^1.12.0",
+    "@types/node": "^13.7.7",
+    "npm-check-updates": "^4.0.4",
+    "typescript": "^3.8.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sunknudsen/logger.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sunknudsen/logger/issues"
+  },
+  "homepage": "https://github.com/sunknudsen/logger#readme",
+  "prettier": {
+    "endOfLine": "lf",
+    "printWidth": 80,
+    "semi": false,
+    "tabWidth": 2,
+    "trailingComma": "es5"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
