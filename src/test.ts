@@ -5,7 +5,10 @@ import { exec } from "child_process"
 import { promisify } from "util"
 import { expect } from "@hapi/code"
 import lab from "@hapi/lab"
-import logger from "./index"
+import nock from "nock"
+import git from "git-rev-sync"
+import { hostname } from "os"
+import logger, { CaptureLevel } from "./index"
 
 dotenv.config()
 
@@ -82,5 +85,80 @@ experiment("logger", () => {
       )
     })
   })
-  // To do: add unit tests for logger.captureException and logger.captureMessage
+  describe("logger.captureException(error, user, extra, callback)", () => {
+    it("should send captured exception to sentry", async () => {
+      return new Promise((resolve, reject) => {
+        let user = {
+          id: "95de1b873ba849e6aa69a4782bf3fb97",
+          email: "hello@example.com",
+        }
+        let extra = {
+          access_token: "d0d90fed2b5c4332b12ff6a8498ca461",
+          password: "asdasd",
+          foo: "bar",
+        }
+        nock("https://sentry.io")
+          .post("/api/3926156/store/")
+          .reply(function(uri, requestBody: any) {
+            try {
+              expect(requestBody.exception).to.exist()
+              expect(requestBody.environment).to.equal("development")
+              expect(requestBody.release).to.equal(git.long())
+              expect(requestBody.extra).to.equal({
+                access_token: "[Filtered]",
+                password: "[Filtered]",
+                foo: extra.foo,
+              })
+              expect(requestBody.tags).to.equal({ hostname: hostname() })
+              expect(requestBody.user).to.equal(user)
+              return [200]
+            } catch (error) {
+              reject(error)
+            }
+          })
+        logger.captureException(new Error("BOOM"), user, extra, () => {
+          resolve()
+        })
+      })
+    })
+  })
+  describe("logger.captureMessage(message, level, user, extra, callback)", () => {
+    it("should send captured exception to sentry", async () => {
+      return new Promise((resolve, reject) => {
+        let message = "foo"
+        let level = "info" as CaptureLevel
+        let user = {
+          id: "95de1b873ba849e6aa69a4782bf3fb97",
+          email: "hello@example.com",
+        }
+        let extra = {
+          access_token: "d0d90fed2b5c4332b12ff6a8498ca461",
+          password: "asdasd",
+          foo: "bar",
+        }
+        nock("https://sentry.io")
+          .post("/api/3926156/store/")
+          .reply(function(uri, requestBody: any) {
+            try {
+              expect(requestBody.level).to.equal(level)
+              expect(requestBody.message).to.equal(message)
+              expect(requestBody.environment).to.equal(process.env.ENV)
+              expect(requestBody.release).to.equal(git.long())
+              expect(requestBody.extra).to.equal({
+                access_token: "[Filtered]",
+                password: "[Filtered]",
+                foo: extra.foo,
+              })
+              expect(requestBody.user).to.equal(user)
+              return [200]
+            } catch (error) {
+              reject(error)
+            }
+          })
+        logger.captureMessage(message, level, user, extra, () => {
+          resolve()
+        })
+      })
+    })
+  })
 })

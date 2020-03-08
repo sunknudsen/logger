@@ -1,4 +1,4 @@
-declare type CaptureLevel = "debug" | "info" | "warning" | "error" | "fatal";
+export declare type CaptureLevel = "debug" | "info" | "warning" | "error" | "fatal";
 interface CaptureUser {
     id: number | string;
     email: string;
@@ -8,6 +8,7 @@ interface CaptureExtra {
 }
 declare type CaptureCallback = () => void;
 declare class Logger {
+    sentryEnabled: boolean;
     constructor();
     listSensitiveKeys(): string[];
     captureException(exception: any, user?: CaptureUser, extra?: CaptureExtra, callback?: CaptureCallback): void;

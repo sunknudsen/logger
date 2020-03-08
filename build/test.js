@@ -8,6 +8,9 @@ const child_process_1 = require("child_process");
 const util_1 = require("util");
 const code_1 = require("@hapi/code");
 const lab_1 = __importDefault(require("@hapi/lab"));
+const nock_1 = __importDefault(require("nock"));
+const git_rev_sync_1 = __importDefault(require("git-rev-sync"));
+const os_1 = require("os");
 const index_1 = __importDefault(require("./index"));
 dotenv_1.default.config();
 const asyncExec = util_1.promisify(child_process_1.exec);
@@ -66,6 +69,83 @@ experiment("logger", () => {
             code_1.expect(stdout).to.equal("\u001b[32m'foo'\u001b[39m\n{ foo: \u001b[32m'bar'\u001b[39m }\n\n");
         });
     });
-    // To do: add unit tests for logger.captureException and logger.captureMessage
+    describe("logger.captureException(error, user, extra, callback)", () => {
+        it("should send captured exception to sentry", async () => {
+            return new Promise((resolve, reject) => {
+                let user = {
+                    id: "95de1b873ba849e6aa69a4782bf3fb97",
+                    email: "hello@example.com",
+                };
+                let extra = {
+                    access_token: "d0d90fed2b5c4332b12ff6a8498ca461",
+                    password: "asdasd",
+                    foo: "bar",
+                };
+                nock_1.default("https://sentry.io")
+                    .post("/api/3926156/store/")
+                    .reply(function (uri, requestBody) {
+                    try {
+                        code_1.expect(requestBody.exception).to.exist();
+                        code_1.expect(requestBody.environment).to.equal("development");
+                        code_1.expect(requestBody.release).to.equal(git_rev_sync_1.default.long());
+                        code_1.expect(requestBody.extra).to.equal({
+                            access_token: "[Filtered]",
+                            password: "[Filtered]",
+                            foo: extra.foo,
+                        });
+                        code_1.expect(requestBody.tags).to.equal({ hostname: os_1.hostname() });
+                        code_1.expect(requestBody.user).to.equal(user);
+                        return [200];
+                    }
+                    catch (error) {
+                        reject(error);
+                    }
+                });
+                index_1.default.captureException(new Error("BOOM"), user, extra, () => {
+                    resolve();
+                });
+            });
+        });
+    });
+    describe("logger.captureMessage(message, level, user, extra, callback)", () => {
+        it("should send captured exception to sentry", async () => {
+            return new Promise((resolve, reject) => {
+                let message = "foo";
+                let level = "info";
+                let user = {
+                    id: "95de1b873ba849e6aa69a4782bf3fb97",
+                    email: "hello@example.com",
+                };
+                let extra = {
+                    access_token: "d0d90fed2b5c4332b12ff6a8498ca461",
+                    password: "asdasd",
+                    foo: "bar",
+                };
+                nock_1.default("https://sentry.io")
+                    .post("/api/3926156/store/")
+                    .reply(function (uri, requestBody) {
+                    try {
+                        code_1.expect(requestBody.level).to.equal(level);
+                        code_1.expect(requestBody.message).to.equal(message);
+                        code_1.expect(requestBody.environment).to.equal(process.env.ENV);
+                        code_1.expect(requestBody.release).to.equal(git_rev_sync_1.default.long());
+                        code_1.expect(requestBody.extra).to.equal({
+                            access_token: "[Filtered]",
+                            password: "[Filtered]",
+                            foo: extra.foo,
+                        });
+                        code_1.expect(requestBody.user).to.equal(user);
+                        return [200];
+                    }
+                    catch (error) {
+                        reject(error);
+                    }
+                });
+                index_1.default.captureMessage(message, level, user, extra, () => {
+                    resolve();
+                });
+            });
+        });
+    });
 });
 //# sourceMappingURL=test.js.map

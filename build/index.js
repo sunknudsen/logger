@@ -33,7 +33,7 @@ const filter = function (extra) {
 };
 class Logger {
     constructor() {
-        if (process.env.ENV === "production" || process.env.SENTRY === "true") {
+        if (process.env.SENTRY_DSN) {
             sentry.init({
                 debug: process.env.DEBUG === "true" ? true : false,
                 dsn: process.env.SENTRY_DSN,
@@ -47,6 +47,7 @@ class Logger {
                     return event;
                 },
             });
+            this.sentryEnabled = true;
         }
     }
     listSensitiveKeys() {
@@ -66,7 +67,7 @@ class Logger {
             this.log("Capture exception");
             this.log({ exception, user, extra });
         }
-        if (process.env.ENV === "production" || process.env.SENTRY === "true") {
+        if (this.sentryEnabled) {
             sentry.withScope(scope => {
                 scope.setTag("hostname", os_1.hostname());
                 if (user) {
@@ -81,7 +82,7 @@ class Logger {
                 let client = sentry.getCurrentHub().getClient();
                 if (client && callback) {
                     // Wait for Sentry to send events, then execute callback
-                    client.close(2000).then(callback);
+                    client.flush(2000).then(callback);
                 }
             });
         }
@@ -106,7 +107,7 @@ class Logger {
             this.log("Capture message");
             this.log({ message, level, user, extra });
         }
-        if (process.env.ENV === "production" || process.env.SENTRY === "true") {
+        if (this.sentryEnabled) {
             sentry.withScope(scope => {
                 scope.setTag("hostname", os_1.hostname());
                 if (user) {
@@ -121,7 +122,7 @@ class Logger {
                 let client = sentry.getCurrentHub().getClient();
                 if (client && callback) {
                     // Wait for Sentry to send events, then execute callback
-                    client.close(2000).then(callback);
+                    client.flush(2000).then(callback);
                 }
             });
         }

@@ -1,6 +1,6 @@
 {
   "name": "@sunknudsen/logger",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Logging utility used by a few of my projects.",
   "engines": {
     "node": ">=10.15.0"
@@ -15,7 +15,7 @@
     "start": "node build/index.js",
     "ts": "tsc -w",
     "code": "npm run ts",
-    "test": "lab -lS build/test.js --bail",
+    "test": "DEBUG=false lab -lS build/test.js --bail",
     "build": "rm -fr build/*; tsc",
     "ncu": "ncu -u"
   },
@@ -29,7 +29,8 @@
     "@hapi/lab": "^22.0.3",
     "@types/dotenv": "^8.2.0",
     "@types/git-rev-sync": "^1.12.0",
-    "@types/node": "^13.7.7",
+    "@types/node": "^13.9.0",
+    "nock": "^12.0.2",
     "npm-check-updates": "^4.0.4",
     "typescript": "^3.8.3"
   },
