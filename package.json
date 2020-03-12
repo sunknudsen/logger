@@ -1,13 +1,13 @@
 {
   "name": "@sunknudsen/logger",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Logging utility used by a few of my projects.",
   "engines": {
     "node": ">=10.15.0"
   },
   "main": "build/index.js",
   "dependencies": {
-    "@sentry/node": "^5.13.2",
+    "@sentry/node": "^5.14.1",
     "dotenv": "^8.2.0",
     "git-rev-sync": "^2.0.0"
   },

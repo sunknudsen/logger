@@ -1,7 +1,4 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -9,10 +6,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const sentry = __importStar(require("@sentry/node"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const git_rev_sync_1 = __importDefault(require("git-rev-sync"));
-const sentry = __importStar(require("@sentry/node"));
 const os_1 = require("os");
 const util_1 = __importDefault(require("util"));
 dotenv_1.default.config();
@@ -73,13 +73,14 @@ class Logger {
                 if (user) {
                     scope.setUser(user);
                 }
-                if (extra !== null && extra instanceof Object) {
+                if (extra && extra instanceof Object) {
                     Object.keys(extra).forEach(function (key) {
-                        scope.setExtra(key, extra[key]);
+                        const _extra = extra;
+                        scope.setExtra(key, _extra[key]);
                     });
                 }
                 sentry.captureException(exception);
-                let client = sentry.getCurrentHub().getClient();
+                const client = sentry.getCurrentHub().getClient();
                 if (client && callback) {
                     // Wait for Sentry to send events, then execute callback
                     client.flush(2000).then(callback);
@@ -113,13 +114,14 @@ class Logger {
                 if (user) {
                     scope.setUser(user);
                 }
-                if (extra !== null && extra instanceof Object) {
+                if (extra && extra instanceof Object) {
                     Object.keys(extra).forEach(function (key) {
-                        scope.setExtra(key, extra[key]);
+                        const _extra = extra;
+                        scope.setExtra(key, _extra[key]);
                     });
                 }
                 sentry.captureMessage(message, level);
-                let client = sentry.getCurrentHub().getClient();
+                const client = sentry.getCurrentHub().getClient();
                 if (client && callback) {
                     // Wait for Sentry to send events, then execute callback
                     client.flush(2000).then(callback);

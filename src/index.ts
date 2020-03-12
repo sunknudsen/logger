@@ -1,8 +1,8 @@
 "use strict"
 
+import * as sentry from "@sentry/node"
 import dotenv from "dotenv"
 import git from "git-rev-sync"
-import * as sentry from "@sentry/node"
 import { hostname } from "os"
 import util from "util"
 
@@ -27,7 +27,7 @@ const filter = function(extra: any) {
 export type CaptureLevel = "debug" | "info" | "warning" | "error" | "fatal"
 interface CaptureUser {
   id: number | string
-  email: string
+  email?: string
 }
 interface CaptureExtra {
   [key: string]: string | number | object
@@ -59,8 +59,8 @@ class Logger {
   }
   captureException(
     exception: any,
-    user?: CaptureUser,
-    extra?: CaptureExtra,
+    user?: CaptureUser | CaptureCallback,
+    extra?: CaptureExtra | CaptureCallback,
     callback?: CaptureCallback
   ) {
     if (typeof user === "function") {
@@ -81,13 +81,14 @@ class Logger {
         if (user) {
           scope.setUser(user as sentry.User)
         }
-        if (extra !== null && extra instanceof Object) {
+        if (extra && extra instanceof Object) {
           Object.keys(extra).forEach(function(key) {
-            scope.setExtra(key, extra[key])
+            const _extra = extra as CaptureExtra
+            scope.setExtra(key, _extra[key])
           })
         }
         sentry.captureException(exception)
-        let client = sentry.getCurrentHub().getClient()
+        const client = sentry.getCurrentHub().getClient()
         if (client && callback) {
           // Wait for Sentry to send events, then execute callback
           client.flush(2000).then(callback)
@@ -99,9 +100,9 @@ class Logger {
   }
   captureMessage(
     message: string,
-    level: CaptureLevel,
-    user?: CaptureUser,
-    extra?: CaptureExtra,
+    level: CaptureLevel | CaptureCallback,
+    user?: CaptureUser | CaptureCallback,
+    extra?: CaptureExtra | CaptureCallback,
     callback?: CaptureCallback
   ) {
     if (typeof level === "function") {
@@ -124,13 +125,14 @@ class Logger {
         if (user) {
           scope.setUser(user as sentry.User)
         }
-        if (extra !== null && extra instanceof Object) {
+        if (extra && extra instanceof Object) {
           Object.keys(extra).forEach(function(key) {
-            scope.setExtra(key, extra[key])
+            const _extra = extra as CaptureExtra
+            scope.setExtra(key, _extra[key])
           })
         }
         sentry.captureMessage(message, level as sentry.Severity)
-        let client = sentry.getCurrentHub().getClient()
+        const client = sentry.getCurrentHub().getClient()
         if (client && callback) {
           // Wait for Sentry to send events, then execute callback
           client.flush(2000).then(callback)
