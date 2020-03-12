@@ -14,11 +14,7 @@ dotenv.config()
 
 const asyncExec = promisify(exec)
 
-const { experiment, describe, it, after } = (exports.lab = lab.script())
-
-const wait = function(delay: number) {
-  return new Promise(resolve => setTimeout(resolve, delay))
-}
+const { experiment, describe, it } = (exports.lab = lab.script())
 
 experiment("logger", () => {
   describe("logger.listSensitiveKeys()", () => {
