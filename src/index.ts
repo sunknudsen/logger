@@ -35,7 +35,7 @@ interface CaptureExtra {
 type CaptureCallback = () => void
 
 class Logger {
-  sentryEnabled: boolean
+  private sentryEnabled: boolean
   constructor() {
     if (process.env.SENTRY_DSN) {
       sentry.init({
