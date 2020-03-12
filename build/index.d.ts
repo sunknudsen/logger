@@ -4,7 +4,7 @@ interface CaptureUser {
     email: string;
 }
 interface CaptureExtra {
-    [key: string]: object | string;
+    [key: string]: string | number | object;
 }
 declare type CaptureCallback = () => void;
 declare class Logger {

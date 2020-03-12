@@ -14,10 +14,7 @@ const os_1 = require("os");
 const index_1 = __importDefault(require("./index"));
 dotenv_1.default.config();
 const asyncExec = util_1.promisify(child_process_1.exec);
-const { experiment, describe, it, after } = (exports.lab = lab_1.default.script());
-const wait = function (delay) {
-    return new Promise(resolve => setTimeout(resolve, delay));
-};
+const { experiment, describe, it } = (exports.lab = lab_1.default.script());
 experiment("logger", () => {
     describe("logger.listSensitiveKeys()", () => {
         it("should return sensitive keys", async () => {
