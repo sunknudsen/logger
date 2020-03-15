@@ -38,10 +38,16 @@ class Logger {
   private sentryEnabled: boolean
   constructor() {
     if (process.env.SENTRY_DSN) {
+      let release: string
+      try {
+        release = git.long()
+      } catch (error) {
+        this.log(error)
+      }
       sentry.init({
         debug: process.env.DEBUG === "true" ? true : false,
         dsn: process.env.SENTRY_DSN,
-        release: git.long(),
+        release: release,
         environment: process.env.ENV,
         beforeSend: event => {
           // Filter out sensitive keys

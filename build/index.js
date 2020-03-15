@@ -34,10 +34,17 @@ const filter = function (extra) {
 class Logger {
     constructor() {
         if (process.env.SENTRY_DSN) {
+            let release;
+            try {
+                release = git_rev_sync_1.default.long();
+            }
+            catch (error) {
+                this.log(error);
+            }
             sentry.init({
                 debug: process.env.DEBUG === "true" ? true : false,
                 dsn: process.env.SENTRY_DSN,
-                release: git_rev_sync_1.default.long(),
+                release: release,
                 environment: process.env.ENV,
                 beforeSend: event => {
                     // Filter out sensitive keys
