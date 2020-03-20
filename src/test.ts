@@ -8,7 +8,7 @@ import git from "git-rev-sync"
 import nock from "nock"
 import { hostname } from "os"
 import { promisify } from "util"
-import logger, { CaptureLevel } from "./index"
+import logger from "./index"
 
 dotenv.config()
 
@@ -171,7 +171,7 @@ experiment("logger", () => {
     it("should send captured exception to sentry", () => {
       return new Promise((resolve, reject) => {
         const message = "foo"
-        const level = "info" as CaptureLevel
+        const level = "info"
         const user = {
           id: "95de1b873ba849e6aa69a4782bf3fb97",
           email: "hello@example.com",
@@ -211,7 +211,7 @@ experiment("logger", () => {
     it("should send captured exception to sentry", () => {
       return new Promise((resolve, reject) => {
         const message = "foo"
-        const level = "info" as CaptureLevel
+        const level = "info"
         const user = {
           id: "95de1b873ba849e6aa69a4782bf3fb97",
           email: "hello@example.com",
@@ -241,7 +241,7 @@ experiment("logger", () => {
     it("should send captured exception to sentry", () => {
       return new Promise((resolve, reject) => {
         const message = "foo"
-        const level = "info" as CaptureLevel
+        const level = "info"
         nock("https://sentry.io")
           .post("/api/3926156/store/")
           .reply((uri, requestBody: any) => {

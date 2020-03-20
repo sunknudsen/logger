@@ -1,4 +1,4 @@
-export declare type CaptureLevel = "debug" | "info" | "warning" | "error" | "fatal";
+declare type CaptureLevel = "debug" | "info" | "warning" | "error" | "fatal";
 interface CaptureUser {
     id: number | string;
     email?: string;

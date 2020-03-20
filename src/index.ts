@@ -24,7 +24,7 @@ const filter = function(extra: any) {
   return extra
 }
 
-export type CaptureLevel = "debug" | "info" | "warning" | "error" | "fatal"
+type CaptureLevel = "debug" | "info" | "warning" | "error" | "fatal"
 interface CaptureUser {
   id: number | string
   email?: string
