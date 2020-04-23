@@ -28,7 +28,7 @@ cp .env.sample .env
 
 Configure your sentry [DSN](https://docs.sentry.io/error-reporting/quickstart/?platform=node#configure-the-sdk) using `SENTRY_DSN`.
 
-Optionally use `LOGGER_SENSITIVE_KEYS` to filter sensitive keys (matching keys are replaced by `[Filtered]`), `DEBUG` to enable debugging and `ENV` to set your environement.
+Optionally use `LOGGER_SENSITIVE_KEYS` to filter sensitive keys (matching keys are replaced by `[Filtered]`), `DEBUG` to enable debugging and `ENV` to set your environment.
 
 ## Usage
 
