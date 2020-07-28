@@ -51,14 +51,16 @@ class Logger {
                 release = git_rev_sync_1.default.long();
             }
             catch (error) {
-                this.log(error);
+                if (!error.message.match(/no git repository found/)) {
+                    this.log(error);
+                }
             }
             sentry.init({
                 debug: process.env.DEBUG === "true" ? true : false,
                 dsn: process.env.SENTRY_DSN,
                 release: release,
                 environment: process.env.ENV,
-                beforeSend: event => {
+                beforeSend: (event) => {
                     // Filter out sensitive keys
                     if (event.extra instanceof Object) {
                         event.extra = filter(event.extra);
@@ -87,7 +89,7 @@ class Logger {
             this.log({ exception, user, extra });
         }
         if (this.sentryEnabled) {
-            sentry.withScope(scope => {
+            sentry.withScope((scope) => {
                 scope.setTag("hostname", os_1.hostname());
                 if (user) {
                     scope.setUser(user);
@@ -128,7 +130,7 @@ class Logger {
             this.log({ message, level, user, extra });
         }
         if (this.sentryEnabled) {
-            sentry.withScope(scope => {
+            sentry.withScope((scope) => {
                 scope.setTag("hostname", os_1.hostname());
                 if (user) {
                     scope.setUser(user);

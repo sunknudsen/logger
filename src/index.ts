@@ -13,8 +13,8 @@ if (process.env.LOGGER_SENSITIVE_KEYS) {
   sensitiveKeys = process.env.LOGGER_SENSITIVE_KEYS.split(",")
 }
 
-const filter = function(extra: any) {
-  Object.keys(extra).forEach(function(key) {
+const filter = function (extra: any) {
+  Object.keys(extra).forEach(function (key) {
     if (sensitiveKeys.includes(key)) {
       extra[key] = "[Filtered]"
     } else if (extra[key] instanceof Object) {
@@ -42,14 +42,16 @@ class Logger {
       try {
         release = git.long()
       } catch (error) {
-        this.log(error)
+        if (!error.message.match(/no git repository found/)) {
+          this.log(error)
+        }
       }
       sentry.init({
         debug: process.env.DEBUG === "true" ? true : false,
         dsn: process.env.SENTRY_DSN,
         release: release,
         environment: process.env.ENV,
-        beforeSend: event => {
+        beforeSend: (event) => {
           // Filter out sensitive keys
           if (event.extra instanceof Object) {
             event.extra = filter(event.extra)
@@ -82,13 +84,13 @@ class Logger {
       this.log({ exception, user, extra })
     }
     if (this.sentryEnabled) {
-      sentry.withScope(scope => {
+      sentry.withScope((scope) => {
         scope.setTag("hostname", hostname())
         if (user) {
           scope.setUser(user as sentry.User)
         }
         if (extra && extra instanceof Object) {
-          Object.keys(extra).forEach(function(key) {
+          Object.keys(extra).forEach(function (key) {
             const _extra = extra as CaptureExtra
             scope.setExtra(key, _extra[key])
           })
@@ -126,13 +128,13 @@ class Logger {
       this.log({ message, level, user, extra })
     }
     if (this.sentryEnabled) {
-      sentry.withScope(scope => {
+      sentry.withScope((scope) => {
         scope.setTag("hostname", hostname())
         if (user) {
           scope.setUser(user as sentry.User)
         }
         if (extra && extra instanceof Object) {
-          Object.keys(extra).forEach(function(key) {
+          Object.keys(extra).forEach(function (key) {
             const _extra = extra as CaptureExtra
             scope.setExtra(key, _extra[key])
           })
@@ -149,7 +151,7 @@ class Logger {
     }
   }
   log(...args: any[]) {
-    args.forEach(function(arg) {
+    args.forEach(function (arg) {
       console.log(util.inspect(arg, false, 20, true))
     })
     console.log() // Add line break for readability

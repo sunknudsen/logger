@@ -1,13 +1,13 @@
 {
   "name": "@sunknudsen/logger",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "Logging utility used by a few of my projects.",
   "engines": {
     "node": ">=10.15.0"
   },
   "main": "build/index.js",
   "dependencies": {
-    "@sentry/node": "^5.20.0",
+    "@sentry/node": "^5.20.1",
     "dotenv": "^8.2.0",
     "git-rev-sync": "^2.0.0"
   },
@@ -29,8 +29,8 @@
     "@hapi/lab": "^22.0.5",
     "@types/dotenv": "^8.2.0",
     "@types/git-rev-sync": "^2.0.0",
-    "@types/node": "^14.0.24",
-    "nock": "^13.0.2",
+    "@types/node": "^14.0.26",
+    "nock": "^13.0.3",
     "npm-check-updates": "^7.0.2",
     "typescript": "^3.9.7"
   },
