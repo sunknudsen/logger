@@ -8,7 +8,8 @@ interface CaptureExtra {
 }
 declare type CaptureCallback = () => void;
 declare class Logger {
-    private sentryEnabled;
+    private sentryClient;
+    private sentryHub;
     constructor();
     listSensitiveKeys(): string[];
     captureException(exception: any, user?: CaptureUser | CaptureCallback, extra?: CaptureExtra | CaptureCallback, callback?: CaptureCallback): void;

@@ -1,6 +1,6 @@
 "use strict"
 
-import * as sentry from "@sentry/node"
+import { NodeClient, Hub, User, Severity } from "@sentry/node"
 import dotenv from "dotenv"
 import git from "git-rev-sync"
 import { hostname } from "os"
@@ -35,7 +35,8 @@ interface CaptureExtra {
 type CaptureCallback = () => void
 
 class Logger {
-  private sentryEnabled: boolean
+  private sentryClient: NodeClient
+  private sentryHub: Hub
   constructor() {
     if (process.env.SENTRY_DSN) {
       let release: string
@@ -46,7 +47,7 @@ class Logger {
           this.log(error)
         }
       }
-      sentry.init({
+      this.sentryClient = new NodeClient({
         debug: process.env.DEBUG === "true" ? true : false,
         dsn: process.env.SENTRY_DSN,
         release: release,
@@ -59,7 +60,7 @@ class Logger {
           return event
         },
       })
-      this.sentryEnabled = true
+      this.sentryHub = new Hub(this.sentryClient)
     }
   }
   listSensitiveKeys() {
@@ -83,11 +84,11 @@ class Logger {
       this.log("Capture exception")
       this.log({ exception, user, extra })
     }
-    if (this.sentryEnabled) {
-      sentry.withScope((scope) => {
+    if (this.sentryHub) {
+      this.sentryHub.withScope((scope) => {
         scope.setTag("hostname", hostname())
         if (user) {
-          scope.setUser(user as sentry.User)
+          scope.setUser(user as User)
         }
         if (extra && extra instanceof Object) {
           Object.keys(extra).forEach(function (key) {
@@ -95,11 +96,10 @@ class Logger {
             scope.setExtra(key, _extra[key])
           })
         }
-        sentry.captureException(exception)
-        const client = sentry.getCurrentHub().getClient()
-        if (client && callback) {
+        this.sentryHub.captureException(exception)
+        if (callback) {
           // Wait for Sentry to send events, then execute callback
-          client.flush(2000).then(callback)
+          this.sentryClient.flush(2000).then(callback)
         }
       })
     } else if (callback) {
@@ -127,11 +127,11 @@ class Logger {
       this.log("Capture message")
       this.log({ message, level, user, extra })
     }
-    if (this.sentryEnabled) {
-      sentry.withScope((scope) => {
+    if (this.sentryHub) {
+      this.sentryHub.withScope((scope) => {
         scope.setTag("hostname", hostname())
         if (user) {
-          scope.setUser(user as sentry.User)
+          scope.setUser(user as User)
         }
         if (extra && extra instanceof Object) {
           Object.keys(extra).forEach(function (key) {
@@ -139,11 +139,10 @@ class Logger {
             scope.setExtra(key, _extra[key])
           })
         }
-        sentry.captureMessage(message, level as sentry.Severity)
-        const client = sentry.getCurrentHub().getClient()
-        if (client && callback) {
+        this.sentryHub.captureMessage(message, level as Severity)
+        if (callback) {
           // Wait for Sentry to send events, then execute callback
-          client.flush(2000).then(callback)
+          this.sentryClient.flush(2000).then(callback)
         }
       })
     } else if (callback) {
