@@ -7,8 +7,8 @@
   },
   "main": "build/index.js",
   "dependencies": {
-    "@sentry/node": "^5.27.3",
-    "dotenv": "^8.2.0",
+    "@sentry/node": "^6.3.5",
+    "dotenv": "^9.0.1",
     "git-rev-sync": "^3.0.1"
   },
   "scripts": {
@@ -25,14 +25,14 @@
     "logging"
   ],
   "devDependencies": {
-    "@hapi/code": "^8.0.2",
-    "@hapi/lab": "^24.1.0",
+    "@hapi/code": "^8.0.3",
+    "@hapi/lab": "^24.2.1",
     "@types/dotenv": "^8.2.0",
     "@types/git-rev-sync": "^2.0.0",
-    "@types/node": "^14.14.7",
-    "nock": "^13.0.5",
-    "npm-check-updates": "^10.0.0",
-    "typescript": "^4.0.5"
+    "@types/node": "^15.0.2",
+    "nock": "^13.0.11",
+    "npm-check-updates": "^11.5.10",
+    "typescript": "^4.2.4"
   },
   "repository": {
     "type": "git",
