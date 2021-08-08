@@ -99,7 +99,7 @@ experiment("logger", () => {
                     }
                 });
                 index_1.default.captureException(new Error("BOOM"), user, extra, () => {
-                    resolve();
+                    resolve(null);
                 });
             });
         });
@@ -127,7 +127,7 @@ experiment("logger", () => {
                     }
                 });
                 index_1.default.captureException(new Error("BOOM"), user, () => {
-                    resolve();
+                    resolve(null);
                 });
             });
         });
@@ -150,7 +150,7 @@ experiment("logger", () => {
                     }
                 });
                 index_1.default.captureException(new Error("BOOM"), () => {
-                    resolve();
+                    resolve(null);
                 });
             });
         });
@@ -191,7 +191,7 @@ experiment("logger", () => {
                     }
                 });
                 index_1.default.captureMessage(message, level, user, extra, () => {
-                    resolve();
+                    resolve(null);
                 });
             });
         });
@@ -222,7 +222,7 @@ experiment("logger", () => {
                     }
                 });
                 index_1.default.captureMessage(message, level, user, () => {
-                    resolve();
+                    resolve(null);
                 });
             });
         });
@@ -248,7 +248,7 @@ experiment("logger", () => {
                     }
                 });
                 index_1.default.captureMessage(message, level, () => {
-                    resolve();
+                    resolve(null);
                 });
             });
         });
@@ -272,7 +272,7 @@ experiment("logger", () => {
                     }
                 });
                 index_1.default.captureMessage(message, () => {
-                    resolve();
+                    resolve(null);
                 });
             });
         });

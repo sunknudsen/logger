@@ -113,7 +113,7 @@ experiment("logger", () => {
             }
           })
         logger.captureException(new Error("BOOM"), user, extra, () => {
-          resolve()
+          resolve(null)
         })
       })
     })
@@ -140,7 +140,7 @@ experiment("logger", () => {
             }
           })
         logger.captureException(new Error("BOOM"), user, () => {
-          resolve()
+          resolve(null)
         })
       })
     })
@@ -162,7 +162,7 @@ experiment("logger", () => {
             }
           })
         logger.captureException(new Error("BOOM"), () => {
-          resolve()
+          resolve(null)
         })
       })
     })
@@ -202,7 +202,7 @@ experiment("logger", () => {
             }
           })
         logger.captureMessage(message, level, user, extra, () => {
-          resolve()
+          resolve(null)
         })
       })
     })
@@ -232,7 +232,7 @@ experiment("logger", () => {
             }
           })
         logger.captureMessage(message, level, user, () => {
-          resolve()
+          resolve(null)
         })
       })
     })
@@ -257,7 +257,7 @@ experiment("logger", () => {
             }
           })
         logger.captureMessage(message, level, () => {
-          resolve()
+          resolve(null)
         })
       })
     })
@@ -280,7 +280,7 @@ experiment("logger", () => {
             }
           })
         logger.captureMessage(message, () => {
-          resolve()
+          resolve(null)
         })
       })
     })
