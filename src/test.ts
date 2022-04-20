@@ -1,9 +1,8 @@
 "use strict"
 
-import { expect } from "@hapi/code"
-import lab from "@hapi/lab"
-import { exec } from "child_process"
 import dotenv from "dotenv"
+import { exec } from "child_process"
+import assert from "assert"
 import git from "git-rev-sync"
 import nock from "nock"
 import { hostname } from "os"
@@ -14,12 +13,10 @@ dotenv.config()
 
 const asyncExec = promisify(exec)
 
-const { experiment, describe, it } = (exports.lab = lab.script())
-
-experiment("logger", () => {
+describe("logger", () => {
   describe("logger.listSensitiveKeys()", () => {
     it("should return sensitive keys", () => {
-      expect(logger.listSensitiveKeys()).to.equal(["access_token", "password"])
+      assert.deepEqual(logger.listSensitiveKeys(), ["access_token", "password"])
     })
   })
   describe("logger.log(string)", () => {
@@ -30,7 +27,7 @@ experiment("logger", () => {
       if (process.env.DEBUG === "true") {
         console.log(stdout)
       }
-      expect(stdout).to.equal("\u001b[32m'foo'\u001b[39m\n\n")
+      assert.equal(stdout, "\u001b[32m'foo'\u001b[39m\n\n")
     })
   })
   describe("logger.log(object)", () => {
@@ -41,7 +38,7 @@ experiment("logger", () => {
       if (process.env.DEBUG === "true") {
         console.log(stdout)
       }
-      expect(stdout).to.equal("{ foo: \u001b[32m'bar'\u001b[39m }\n\n")
+      assert.equal(stdout, "{ foo: \u001b[32m'bar'\u001b[39m }\n\n")
     })
   })
   describe("logger.log(array)", () => {
@@ -52,7 +49,8 @@ experiment("logger", () => {
       if (process.env.DEBUG === "true") {
         console.log(stdout)
       }
-      expect(stdout).to.equal(
+      assert.equal(
+        stdout,
         "[ \u001b[32m'foo'\u001b[39m, \u001b[32m'bar'\u001b[39m ]\n\n"
       )
     })
@@ -65,7 +63,7 @@ experiment("logger", () => {
       if (process.env.DEBUG === "true") {
         console.log(stdout)
       }
-      expect(stdout).to.match(/Error: BOOM\n    at/)
+      assert.match(stdout, /Error: BOOM\n    at/)
     })
   })
   describe("logger.log(string, object)", () => {
@@ -76,7 +74,8 @@ experiment("logger", () => {
       if (process.env.DEBUG === "true") {
         console.log(stdout)
       }
-      expect(stdout).to.equal(
+      assert(
+        stdout,
         "\u001b[32m'foo'\u001b[39m\n{ foo: \u001b[32m'bar'\u001b[39m }\n\n"
       )
     })
@@ -93,25 +92,27 @@ experiment("logger", () => {
           password: "asdasd",
           foo: "bar",
         }
-        nock("https://sentry.io")
-          .post("/api/3926156/store/")
-          .reply((uri, requestBody: any) => {
-            try {
-              expect(requestBody.exception).to.exist()
-              expect(requestBody.environment).to.equal("development")
-              expect(requestBody.release).to.equal(git.long())
-              expect(requestBody.extra).to.equal({
-                access_token: "[Filtered]",
-                password: "[Filtered]",
-                foo: extra.foo,
-              })
-              expect(requestBody.tags).to.equal({ hostname: hostname() })
-              expect(requestBody.user).to.equal(user)
-              return [200]
-            } catch (error) {
-              reject(error)
-            }
-          })
+        if (process.env.NOCK === "true") {
+          nock("https://sentry.io")
+            .post("/api/3926156/store/")
+            .reply((uri, requestBody: any) => {
+              try {
+                assert.notEqual(requestBody.exception, undefined)
+                assert.equal(requestBody.environment, "development")
+                assert.equal(requestBody.release, git.long())
+                assert.deepEqual(requestBody.extra, {
+                  access_token: "[Filtered]",
+                  password: "[Filtered]",
+                  foo: extra.foo,
+                })
+                assert.deepEqual(requestBody.tags, { hostname: hostname() })
+                assert.deepEqual(requestBody.user, user)
+                return [200]
+              } catch (error) {
+                reject(error)
+              }
+            })
+        }
         logger.captureException(new Error("BOOM"), user, extra, () => {
           resolve(null)
         })
@@ -125,20 +126,22 @@ experiment("logger", () => {
           id: "95de1b873ba849e6aa69a4782bf3fb97",
           email: "hello@example.com",
         }
-        nock("https://sentry.io")
-          .post("/api/3926156/store/")
-          .reply((uri, requestBody: any) => {
-            try {
-              expect(requestBody.exception).to.exist()
-              expect(requestBody.environment).to.equal("development")
-              expect(requestBody.release).to.equal(git.long())
-              expect(requestBody.tags).to.equal({ hostname: hostname() })
-              expect(requestBody.user).to.equal(user)
-              return [200]
-            } catch (error) {
-              reject(error)
-            }
-          })
+        if (process.env.NOCK === "true") {
+          nock("https://sentry.io")
+            .post("/api/3926156/store/")
+            .reply((uri, requestBody: any) => {
+              try {
+                assert.notEqual(requestBody.exception, undefined)
+                assert.equal(requestBody.environment, "development")
+                assert.equal(requestBody.release, git.long())
+                assert.deepEqual(requestBody.tags, { hostname: hostname() })
+                assert.deepEqual(requestBody.user, user)
+                return [200]
+              } catch (error) {
+                reject(error)
+              }
+            })
+        }
         logger.captureException(new Error("BOOM"), user, () => {
           resolve(null)
         })
@@ -148,19 +151,21 @@ experiment("logger", () => {
   describe("logger.captureException(error, callback)", () => {
     it("should send captured exception to sentry", () => {
       return new Promise((resolve, reject) => {
-        nock("https://sentry.io")
-          .post("/api/3926156/store/")
-          .reply((uri, requestBody: any) => {
-            try {
-              expect(requestBody.exception).to.exist()
-              expect(requestBody.environment).to.equal("development")
-              expect(requestBody.release).to.equal(git.long())
-              expect(requestBody.tags).to.equal({ hostname: hostname() })
-              return [200]
-            } catch (error) {
-              reject(error)
-            }
-          })
+        if (process.env.NOCK === "true") {
+          nock("https://sentry.io")
+            .post("/api/3926156/store/")
+            .reply((uri, requestBody: any) => {
+              try {
+                assert.notEqual(requestBody.exception, undefined)
+                assert.equal(requestBody.environment, "development")
+                assert.equal(requestBody.release, git.long())
+                assert.deepEqual(requestBody.tags, { hostname: hostname() })
+                return [200]
+              } catch (error) {
+                reject(error)
+              }
+            })
+        }
         logger.captureException(new Error("BOOM"), () => {
           resolve(null)
         })
@@ -181,26 +186,28 @@ experiment("logger", () => {
           password: "asdasd",
           foo: "bar",
         }
-        nock("https://sentry.io")
-          .post("/api/3926156/store/")
-          .reply((uri, requestBody: any) => {
-            try {
-              expect(requestBody.level).to.equal(level)
-              expect(requestBody.message).to.equal(message)
-              expect(requestBody.environment).to.equal(process.env.ENV)
-              expect(requestBody.release).to.equal(git.long())
-              expect(requestBody.extra).to.equal({
-                access_token: "[Filtered]",
-                password: "[Filtered]",
-                foo: extra.foo,
-              })
-              expect(requestBody.tags).to.equal({ hostname: hostname() })
-              expect(requestBody.user).to.equal(user)
-              return [200]
-            } catch (error) {
-              reject(error)
-            }
-          })
+        if (process.env.NOCK === "true") {
+          nock("https://sentry.io")
+            .post("/api/3926156/store/")
+            .reply((uri, requestBody: any) => {
+              try {
+                assert.equal(requestBody.level, level)
+                assert.equal(requestBody.message, message)
+                assert.equal(requestBody.environment, process.env.ENV)
+                assert.equal(requestBody.release, git.long())
+                assert.deepEqual(requestBody.extra, {
+                  access_token: "[Filtered]",
+                  password: "[Filtered]",
+                  foo: extra.foo,
+                })
+                assert.deepEqual(requestBody.tags, { hostname: hostname() })
+                assert.deepEqual(requestBody.user, user)
+                return [200]
+              } catch (error) {
+                reject(error)
+              }
+            })
+        }
         logger.captureMessage(message, level, user, extra, () => {
           resolve(null)
         })
@@ -216,21 +223,23 @@ experiment("logger", () => {
           id: "95de1b873ba849e6aa69a4782bf3fb97",
           email: "hello@example.com",
         }
-        nock("https://sentry.io")
-          .post("/api/3926156/store/")
-          .reply((uri, requestBody: any) => {
-            try {
-              expect(requestBody.level).to.equal(level)
-              expect(requestBody.message).to.equal(message)
-              expect(requestBody.environment).to.equal(process.env.ENV)
-              expect(requestBody.release).to.equal(git.long())
-              expect(requestBody.tags).to.equal({ hostname: hostname() })
-              expect(requestBody.user).to.equal(user)
-              return [200]
-            } catch (error) {
-              reject(error)
-            }
-          })
+        if (process.env.NOCK === "true") {
+          nock("https://sentry.io")
+            .post("/api/3926156/store/")
+            .reply((uri, requestBody: any) => {
+              try {
+                assert.equal(requestBody.level, level)
+                assert.equal(requestBody.message, message)
+                assert.equal(requestBody.environment, process.env.ENV)
+                assert.equal(requestBody.release, git.long())
+                assert.deepEqual(requestBody.tags, { hostname: hostname() })
+                assert.deepEqual(requestBody.user, user)
+                return [200]
+              } catch (error) {
+                reject(error)
+              }
+            })
+        }
         logger.captureMessage(message, level, user, () => {
           resolve(null)
         })
@@ -242,20 +251,22 @@ experiment("logger", () => {
       return new Promise((resolve, reject) => {
         const message = "foo"
         const level = "info"
-        nock("https://sentry.io")
-          .post("/api/3926156/store/")
-          .reply((uri, requestBody: any) => {
-            try {
-              expect(requestBody.level).to.equal(level)
-              expect(requestBody.message).to.equal(message)
-              expect(requestBody.environment).to.equal(process.env.ENV)
-              expect(requestBody.release).to.equal(git.long())
-              expect(requestBody.tags).to.equal({ hostname: hostname() })
-              return [200]
-            } catch (error) {
-              reject(error)
-            }
-          })
+        if (process.env.NOCK === "true") {
+          nock("https://sentry.io")
+            .post("/api/3926156/store/")
+            .reply((uri, requestBody: any) => {
+              try {
+                assert.equal(requestBody.level, level)
+                assert.equal(requestBody.message, message)
+                assert.equal(requestBody.environment, process.env.ENV)
+                assert.equal(requestBody.release, git.long())
+                assert.deepEqual(requestBody.tags, { hostname: hostname() })
+                return [200]
+              } catch (error) {
+                reject(error)
+              }
+            })
+        }
         logger.captureMessage(message, level, () => {
           resolve(null)
         })
@@ -266,19 +277,21 @@ experiment("logger", () => {
     it("should send captured exception to sentry", () => {
       return new Promise((resolve, reject) => {
         const message = "foo"
-        nock("https://sentry.io")
-          .post("/api/3926156/store/")
-          .reply((uri, requestBody: any) => {
-            try {
-              expect(requestBody.message).to.equal(message)
-              expect(requestBody.environment).to.equal(process.env.ENV)
-              expect(requestBody.release).to.equal(git.long())
-              expect(requestBody.tags).to.equal({ hostname: hostname() })
-              return [200]
-            } catch (error) {
-              reject(error)
-            }
-          })
+        if (process.env.NOCK === "true") {
+          nock("https://sentry.io")
+            .post("/api/3926156/store/")
+            .reply((uri, requestBody: any) => {
+              try {
+                assert.equal(requestBody.message, message)
+                assert.equal(requestBody.environment, process.env.ENV)
+                assert.equal(requestBody.release, git.long())
+                assert.deepEqual(requestBody.tags, { hostname: hostname() })
+                return [200]
+              } catch (error) {
+                reject(error)
+              }
+            })
+        }
         logger.captureMessage(message, () => {
           resolve(null)
         })

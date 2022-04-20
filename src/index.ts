@@ -1,6 +1,7 @@
 "use strict"
 
 import { NodeClient, Hub, User, Severity } from "@sentry/node"
+import { SeverityLevel } from "@sentry/utils"
 import dotenv from "dotenv"
 import git from "git-rev-sync"
 import { hostname } from "os"
@@ -24,7 +25,7 @@ const filter = function (extra: any) {
   return extra
 }
 
-type CaptureLevel = "debug" | "info" | "warning" | "error" | "fatal"
+type CaptureLevel = SeverityLevel
 interface CaptureUser {
   id: number | string
   email?: string

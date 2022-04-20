@@ -71,7 +71,7 @@ class Logger {
         }
         if (this.sentryHub) {
             this.sentryHub.withScope((scope) => {
-                scope.setTag("hostname", os_1.hostname());
+                scope.setTag("hostname", (0, os_1.hostname)());
                 if (user) {
                     scope.setUser(user);
                 }
@@ -111,7 +111,7 @@ class Logger {
         }
         if (this.sentryHub) {
             this.sentryHub.withScope((scope) => {
-                scope.setTag("hostname", os_1.hostname());
+                scope.setTag("hostname", (0, os_1.hostname)());
                 if (user) {
                     scope.setUser(user);
                 }

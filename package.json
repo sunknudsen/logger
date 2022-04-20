@@ -1,23 +1,30 @@
 {
   "name": "@sunknudsen/logger",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "Logging utility used by a few of my projects.",
   "engines": {
-    "node": ">=10.15.0"
+    "node": ">=16.13.2"
   },
   "main": "build/index.js",
+  "files": [
+    "build/index.d.ts",
+    "build/index.js",
+    "build/index.js.map",
+    "package.json",
+    "LICENCE",
+    "README.md"
+  ],
   "dependencies": {
-    "@sentry/node": "^6.11.0",
-    "dotenv": "^10.0.0",
-    "git-rev-sync": "^3.0.1"
+    "@sentry/node": "^6.19.6",
+    "dotenv": "^16.0.0",
+    "git-rev-sync": "^3.0.2"
   },
   "scripts": {
-    "start": "node build/index.js",
-    "ts": "tsc -w",
-    "code": "npm run ts",
-    "test": "DEBUG=false lab -lS build/test.js --bail",
     "build": "rm -fr build/*; tsc",
-    "ncu": "ncu -u"
+    "code": "tsc -w",
+    "ncu": "ncu --target minor --upgrade",
+    "prepublishOnly": "npm run build",
+    "test": "DEBUG=false mocha build/test.js"
   },
   "author": "Sun Knudsen <hello@sunknudsen.com>",
   "license": "MIT",
@@ -25,14 +32,13 @@
     "logging"
   ],
   "devDependencies": {
-    "@hapi/code": "^8.0.3",
-    "@hapi/lab": "^24.3.2",
-    "@types/dotenv": "^8.2.0",
     "@types/git-rev-sync": "^2.0.0",
-    "@types/node": "^16.4.13",
-    "nock": "^13.1.1",
-    "npm-check-updates": "^11.8.3",
-    "typescript": "^4.3.5"
+    "@types/mocha": "^9.1.0",
+    "@types/node": "^17.0.25",
+    "mocha": "^9.2.2",
+    "nock": "^13.2.4",
+    "npm-check-updates": "^12.5.9",
+    "typescript": "^4.6.3"
   },
   "repository": {
     "type": "git",

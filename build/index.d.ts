@@ -1,4 +1,5 @@
-declare type CaptureLevel = "debug" | "info" | "warning" | "error" | "fatal";
+import { SeverityLevel } from "@sentry/utils";
+declare type CaptureLevel = SeverityLevel;
 interface CaptureUser {
     id: number | string;
     email?: string;
